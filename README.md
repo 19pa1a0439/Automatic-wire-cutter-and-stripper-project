@@ -1,5 +1,7 @@
 # Automatic-wire-cutter-and-stripper-project
 #Code
+
+
 #include <Stepper.h> 
 
 int numberofstep = 48*64; 
