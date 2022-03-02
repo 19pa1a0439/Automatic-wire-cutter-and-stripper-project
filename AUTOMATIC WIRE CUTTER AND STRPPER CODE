@@ -1,0 +1,154 @@
+#include <Keypad.h>
+#include <Servo.h>
+#include <LiquidCrystal.h>
+
+const int dirPin = 23;
+const int stepPin = 27;
+const int stepsPerRevolution = 200;
+const byte ROWS = 4; //four rows
+const byte COLS = 4; //three columns
+char keys[ROWS][COLS] = {
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'*','0','#','D'}
+};
+byte rowPins[ROWS] = {52, 50, 48,46}; //connect to the row pinouts of the keypad
+byte colPins[COLS] = {44,42, 40,38}; //connect to the column pinouts of the keypad
+
+Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
+
+
+Servo myservo1;
+Servo myservo2;
+int wl,q,fsl,bsl;char key;
+
+// initialize the library by associating any needed LCD interface pin
+// with the arduino pin number it is connected to
+const int rs = 2, en = 3, d4 = 4, d5 = 8, d6 = 6, d7 = 7;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+void distmm(int);void cut(int);
+void setup() {Serial.begin(9600);
+  // set up the LCD's number of columns and rows:
+  lcd.begin(16, 2);
+  // Print a message to the LCD.
+  lcd.print("  Wire Cutting ");
+  lcd.setCursor(0, 1);
+  lcd.print("     Machine ");  
+  pinMode(stepPin, OUTPUT);
+  pinMode(dirPin, OUTPUT);
+  digitalWrite(dirPin,HIGH);
+   myservo1.attach(29);// direction servo
+  myservo2.attach(31);//cutting servo
+  myservo1.write(60);myservo2.write(20);
+ delay(2500); lcd.clear();
+  key = keypad.getKey();  
+  if (key=='D')   
+ { 
+ 
+  lcd.setCursor(0, 0);
+  lcd.print("Setting Mode..... ");delay(2000);   
+    lcd.setCursor(0, 0);
+    lcd.print("MENU:WL=1,FSL=2");
+    lcd.setCursor(0,1); 
+    lcd.print("  BSL=3,QTY=4 ");
+    while(!(key=='1'||key=='2'||key=='3'||key=='4'))
+    {key=keypad.getKey();}
+  
+       if(key=='1')
+      {
+        lcd.clear(); lcd.setCursor(0, 0);
+        lcd.print("wire length");delay(1500);        
+                      
+         }  
+      else if(key=='2')
+      {lcd.clear(); lcd.setCursor(0, 0);
+       lcd.print("fr strip length");delay(1500);}  
+   
+     else if(key=='3')
+      {lcd.clear(); lcd.setCursor(0, 0);
+       lcd.print("bk strip length");delay(1500);} 
+      
+       else if(key=='4')
+      {lcd.clear(); lcd.setCursor(0, 0);
+       lcd.print("Quantity");delay(1500);} 
+      
+    
+         
+             
+         
+   
+      
+    }
+    
+
+
+
+
+}
+    
+   
+
+
+
+     
+ 
+
+void loop()
+{ int kv; 
+
+   lcd.setCursor(0, 0); 
+   key=keypad.getKey();    
+   kv=(int)key-48;lcd.setCursor(12, 0);
+   lcd.print(key);  Serial.print(key);  
+   cut(kv);lcd.clear();lcd.print("Enter Qty:"); 
+   delay(100);
+ 
+   
+   }
+
+  
+ 
+
+
+
+
+
+void distmm(int l)
+{int i, j;
+for(j=0;j<l;j++)
+{
+ for(i=0;i<24;i++)
+  {digitalWrite(stepPin, HIGH);
+  delayMicroseconds(250);
+  digitalWrite(stepPin, LOW);
+  delayMicroseconds(250);
+    
+  }
+}
+}
+
+
+void cut(int qty)
+{int i;
+ 
+for(i=0;i<qty;i++)
+{
+ delay(2000);
+ myservo1.write(60);
+ distmm(6);
+myservo2.write(20);delay(500);
+myservo2.write(170);delay(1500);
+myservo2.write(20);delay(1500);
+myservo1.write(60);
+distmm(50);
+myservo2.write(20);delay(500);
+myservo2.write(170);delay(1500);
+myservo2.write(20);delay(1500);
+distmm(8);
+myservo1.write(75);myservo2.write(20);
+delay(500);myservo2.write(170);delay(500);myservo2.write(20);delay(500);
+
+
+}
+}
